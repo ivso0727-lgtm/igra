@@ -1,0 +1,385 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Магічна імперія Соні</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f5effb;color:#302344;font-family:Arial,sans-serif}
+header{background:linear-gradient(120deg,#39254f,#8862ad);color:white;padding:25px;text-align:center}
+header h1{margin:0;font-size:30px}
+header p{margin-bottom:0}
+.container{max-width:1100px;margin:auto;padding:18px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.stat,.panel{background:white;padding:15px;border-radius:14px;box-shadow:0 3px 12px #00000010}
+.stat{text-align:center}
+.stat strong{display:block;font-size:21px;margin-top:5px}
+nav{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}
+button{border:0;background:#7652a2;color:white;padding:11px 15px;border-radius:9px;cursor:pointer;font-weight:bold}
+button:hover{filter:brightness(1.12)}
+button:disabled{opacity:.4;cursor:not-allowed}
+nav button{background:#e5d9f1;color:#50386e}
+nav button.active{background:#7652a2;color:white}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.panel h3{margin-top:0}
+.panel p{color:#766b82}
+.tag{background:#f0e7f8;padding:5px 9px;border-radius:20px;font-size:12px}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.notice{padding:15px;background:#eee4f8;border-radius:12px;margin:15px 0}
+.hidden{display:none}
+.progress{height:8px;background:#eee;border-radius:10px;margin-top:8px}
+.progress div{height:100%;background:#b38bd8;border-radius:10px}
+input{padding:9px;border:1px solid #ddd;border-radius:8px}
+@media(max-width:650px){
+.stats{grid-template-columns:repeat(2,1fr)}
+.grid{grid-template-columns:1fr}
+header h1{font-size:23px}
+}
+</style>
+</head>
+<body>
+
+<header>
+<h1>🌙 Магічна імперія Соні</h1>
+<p>Від маленької крамниці до найбільшої магічної корпорації!</p>
+</header>
+
+<div class="container">
+<div class="stats">
+<div class="stat">💰 Золото<strong id="gold">120</strong></div>
+<div class="stat">✨ Енергія<strong id="mana">18</strong></div>
+<div class="stat">🌿 Трави<strong id="herbs">12</strong></div>
+<div class="stat">💎 Кристали<strong id="crystals">3</strong></div>
+<div class="stat">⭐ Репутація<strong id="rep">0</strong></div>
+<div class="stat">🏆 Рівень<strong id="level">1</strong></div>
+<div class="stat">📦 Продажі<strong id="sales">0</strong></div>
+<div class="stat">🧑‍🔬 Працівники<strong id="workers">0</strong></div>
+</div>
+
+<nav>
+<button class="active" onclick="show('shop',this)">🏪 Крамниця</button>
+<button onclick="show('garden',this)">🌱 Сад</button>
+<button onclick="show('lab',this)">⚗️ Лабораторія</button>
+<button onclick="show('market',this)">🛍️ Ринок</button>
+<button onclick="show('quests',this)">📜 Завдання</button>
+<button onclick="show('upgrades',this)">🛠️ Покращення</button>
+<button onclick="show('world',this)">🗺️ Світ</button>
+<button onclick="show('save',this)">💾 Збереження</button>
+</nav>
+
+<div id="content"></div>
+</div>
+
+<script>
+const initial={
+gold:120,mana:18,herbs:12,crystals:3,rep:0,
+level:1,xp:0,sales:0,workers:0,
+garden:0,lab:0,shop:0,
+potions:0,charms:0,elixirs:0,
+harvests:0,crafts:0,
+forest:false,caves:false,
+quests:[],last:Date.now()
+};
+
+let game;
+try{
+game=JSON.parse(localStorage.getItem("soniaGame"))||initial;
+}catch(e){game={...initial};}
+
+function save(){
+localStorage.setItem("soniaGame",JSON.stringify(game));
+}
+
+function update(){
+["gold","mana","herbs","crystals","rep","level","sales","workers"].forEach(k=>{
+document.getElementById(k).textContent=game[k];
+});
+save();
+}
+
+function xp(n){
+game.xp+=n;
+while(game.xp>=game.level*50){
+game.xp-=game.level*50;
+game.level++;
+game.gold+=40;
+game.mana+=5;
+alert("🎉 Новий рівень! +40 золота!");
+}
+}
+
+function show(page,button){
+document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+if(button)button.classList.add("active");
+
+let html="";
+
+if(page==="shop"){
+html=`
+<div class="panel">
+<h2>🏪 Крамниця «Місячний Лотос»</h2>
+<p>Ти успадкувала стару магічну крамницю. Тепер настав час перетворити її на імперію!</p>
+<div class="notice">✨ Виготовляй товари, продавай їх, заробляй золото та відкривай нові землі.</div>
+<h3>Твої товари</h3>
+<p>🧪 Зілля: ${game.potions}</p>
+<p>🧿 Обереги: ${game.charms}</p>
+<p>🌟 Еліксири: ${game.elixirs}</p>
+</div>`;
+}
+
+if(page==="garden"){
+html=`
+<div class="panel">
+<h2>🌱 Магічний сад</h2>
+<p>Збирай рослини для виробництва магічних товарів.</p>
+<button onclick="harvest()">Зібрати трави</button>
+<button onclick="upgradeGarden()">Розширити сад</button>
+<p>Рівень саду: ${game.garden+1}</p>
+</div>`;
+}
+
+if(page==="lab"){
+html=`
+<div class="grid">
+<div class="panel">
+<h3>🧪 Зілля здоров'я</h3>
+<p>Потрібно: 3 трави та 2 енергії.</p>
+<button onclick="craft('potions',3,2)">Виготовити</button>
+</div>
+<div class="panel">
+<h3>🧿 Захисний оберіг</h3>
+<p>Потрібно: 2 трави, 1 кристал, 3 енергії.</p>
+<button onclick="craftCharm()">Виготовити</button>
+</div>
+<div class="panel">
+<h3>🌟 Еліксир місяця</h3>
+<p>Потрібно: 5 трав, 2 кристали, 6 енергії.</p>
+<button onclick="craftElixir()">Виготовити</button>
+</div>
+</div>`;
+}
+
+if(page==="market"){
+html=`
+<div class="grid">
+<div class="panel">
+<h3>🧪 Продати зілля</h3>
+<p>На складі: ${game.potions}</p>
+<button onclick="sell('potions',25)">Продати 1 за 25 золота</button>
+</div>
+<div class="panel">
+<h3>🧿 Продати оберіг</h3>
+<p>На складі: ${game.charms}</p>
+<button onclick="sell('charms',43)">Продати 1 за 43 золота</button>
+</div>
+<div class="panel">
+<h3>🌟 Продати еліксир</h3>
+<p>На складі: ${game.elixirs}</p>
+<button onclick="sell('elixirs',88)">Продати 1 за 88 золота</button>
+</div>
+</div>`;
+}
+
+if(page==="quests"){
+html=`
+<div class="panel">
+<h2>📜 Завдання</h2>
+<p>Продай 3 товари — нагорода 60 золота.</p>
+${game.sales>=3?'<button onclick="claimQuest(\'sales\')">Забрати нагороду</button>':'<span class="tag">Виконано '+game.sales+'/3</span>'}
+<hr>
+<p>Збери трави 3 рази — нагорода 5 кристалів.</p>
+${game.harvests>=3&&!game.quests.includes("harvest")?'<button onclick="claimQuest(\'harvest\')">Забрати нагороду</button>':'<span class="tag">Виконано '+Math.min(game.harvests,3)+'/3</span>'}
+<hr>
+<p>Виготов 5 товарів — нагорода 100 золота.</p>
+${game.crafts>=5&&!game.quests.includes("craft")?'<button onclick="claimQuest(\'craft\')">Забрати нагороду</button>':'<span class="tag">Виконано '+Math.min(game.crafts,5)+'/5</span>'}
+</div>`;
+}
+
+if(page==="upgrades"){
+html=`
+<div class="grid">
+<div class="panel">
+<h3>🏪 Покращити крамницю</h3>
+<p>Вартість: ${90+game.shop*75} золота.</p>
+<button onclick="upgradeShop()">Покращити</button>
+<p>Рівень: ${game.shop+1}</p>
+</div>
+<div class="panel">
+<h3>⚗️ Покращити лабораторію</h3>
+<p>Вартість: 100 золота та 1 кристал.</p>
+<button onclick="upgradeLab()">Покращити</button>
+<p>Рівень: ${game.lab+1}</p>
+</div>
+<div class="panel">
+<h3>🧑‍🔬 Найняти працівника</h3>
+<p>Вартість: ${140+game.workers*100} золота.</p>
+<button onclick="hire()">Найняти</button>
+</div>
+</div>`;
+}
+
+if(page==="world"){
+html=`
+<div class="grid">
+<div class="panel">
+<h3>🏘️ Місто чарівників</h3>
+<p>Тут почалася твоя історія.</p>
+<span class="tag">Відкрито</span>
+</div>
+<div class="panel">
+<h3>🌳 Зачарований ліс</h3>
+<p>Нові ресурси та рідкісні рослини.</p>
+${game.forest?'<span class="tag">Відкрито</span>':'<button onclick="unlockForest()">Відкрити за 80 золота</button>'}
+</div>
+<div class="panel">
+<h3>💎 Кришталеві печери</h3>
+<p>Джерело магічних кристалів.</p>
+${game.caves?'<span class="tag">Відкрито</span>':'<button onclick="unlockCaves()">Відкрити за 4 кристали та 4 рівень</button>'}
+</div>
+</div>`;
+}
+
+if(page==="save"){
+html=`
+<div class="panel">
+<h2>💾 Збереження</h2>
+<p>Прогрес автоматично зберігається у твоєму браузері.</p>
+<button onclick="save()">Зберегти зараз</button>
+<button onclick="exportSave()">Завантажити резервну копію</button>
+<br><br>
+<input type="file" id="file" accept=".json" onchange="importSave(event)">
+<br><br>
+<button onclick="resetGame()">Почати спочатку</button>
+</div>`;
+}
+
+document.getElementById("content").innerHTML=html;
+update();
+}
+
+function harvest(){
+let n=4+game.garden*2+Math.floor(Math.random()*4);
+game.herbs+=n;
+game.harvests++;
+xp(8);
+alert("🌿 Зібрано "+n+" чарівних трав!");
+refresh();
+}
+
+function craft(id,h,m){
+if(game.herbs<h||game.mana<m)return alert("Недостатньо ресурсів!");
+game.herbs-=h;game.mana-=m;game[id]++;
+game.crafts++;xp(10+game.lab*2);
+refresh();
+}
+
+function craftCharm(){
+if(game.herbs<2||game.crystals<1||game.mana<3)return alert("Недостатньо ресурсів!");
+game.herbs-=2;game.crystals--;game.mana-=3;
+game.charms++;game.crafts++;xp(15);refresh();
+}
+
+function craftElixir(){
+if(game.herbs<5||game.crystals<2||game.mana<6)return alert("Недостатньо ресурсів!");
+game.herbs-=5;game.crystals-=2;game.mana-=6;
+game.elixirs++;game.crafts++;xp(25);refresh();
+}
+
+function sell(id,price){
+if(game[id]<1)return alert("Немає товару на складі!");
+game[id]--;
+game.gold+=Math.round(price*(1+game.shop*.05));
+game.sales++;game.rep++;
+xp(7);refresh();
+}
+
+function upgradeGarden(){
+let cost=55+game.garden*45;
+if(game.gold<cost||game.herbs<5)return alert("Потрібно більше ресурсів!");
+game.gold-=cost;game.herbs-=5;game.garden++;refresh();
+}
+
+function upgradeShop(){
+let cost=90+game.shop*75;
+if(game.gold<cost)return alert("Недостатньо золота!");
+game.gold-=cost;game.shop++;refresh();
+}
+
+function upgradeLab(){
+if(game.gold<100||game.crystals<1)return alert("Недостатньо ресурсів!");
+game.gold-=100;game.crystals--;game.lab++;refresh();
+}
+
+function hire(){
+let cost=140+game.workers*100;
+if(game.gold<cost)return alert("Недостатньо золота!");
+game.gold-=cost;game.workers++;refresh();
+}
+
+function unlockForest(){
+if(game.gold<80)return alert("Недостатньо золота!");
+game.gold-=80;game.forest=true;xp(20);refresh();
+}
+
+function unlockCaves(){
+if(game.level<4||game.crystals<4)return alert("Потрібен 4 рівень та 4 кристали!");
+game.crystals-=4;game.caves=true;xp(35);refresh();
+}
+
+function claimQuest(id){
+if(game.quests.includes(id))return;
+if(id==="sales"&&game.sales>=3)game.gold+=60;
+if(id==="harvest"&&game.harvests>=3)game.crystals+=5;
+if(id==="craft"&&game.crafts>=5)game.gold+=100;
+game.quests.push(id);xp(15);refresh();
+}
+
+function refresh(){
+update();
+let active=document.querySelector("nav button.active");
+let page=active?.getAttribute("onclick")?.match(/'([^']+)'/)?.[1]||"shop";
+show(page,active);
+}
+
+function exportSave(){
+let blob=new Blob([JSON.stringify(game)],{type:"application/json"});
+let a=document.createElement("a");
+a.href=URL.createObjectURL(blob);
+a.download="sonia-save.json";
+a.click();
+}
+
+function importSave(e){
+let reader=new FileReader();
+reader.onload=()=>{
+try{
+game=JSON.parse(reader.result);
+save();location.reload();
+}catch(err){alert("Помилка файлу!");}
+};
+reader.readAsText(e.target.files[0]);
+}
+
+function resetGame(){
+if(confirm("Видалити весь прогрес?")){
+game={...initial};
+save();location.reload();
+}
+}
+
+function tick(){
+let now=Date.now();
+let minutes=Math.floor((now-game.last)/60000);
+if(minutes>0){
+game.gold+=minutes*game.workers*2;
+game.last=now;update();
+}
+}
+setInterval(tick,10000);
+
+show("shop",document.querySelector("nav button"));
+</script>
+</body>
+</html>
