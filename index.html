@@ -1,385 +1,645 @@
-
 <!DOCTYPE html>
 <html lang="uk">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Магічна імперія Соні</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Квіткова мрія — гра флористки Соні</title>
 <style>
+:root{--ink:#493b45;--muted:#8b7882;--pink:#e99eae;--pink2:#f7d9df;--cream:#fff9f2;--green:#73977c;--green2:#dce9d9;--gold:#e8bd72;--line:#eedfe0;--shadow:0 14px 36px #68485818}
 *{box-sizing:border-box}
-body{margin:0;background:#f5effb;color:#302344;font-family:Arial,sans-serif}
-header{background:linear-gradient(120deg,#39254f,#8862ad);color:white;padding:25px;text-align:center}
-header h1{margin:0;font-size:30px}
-header p{margin-bottom:0}
-.container{max-width:1100px;margin:auto;padding:18px}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.stat,.panel{background:white;padding:15px;border-radius:14px;box-shadow:0 3px 12px #00000010}
-.stat{text-align:center}
-.stat strong{display:block;font-size:21px;margin-top:5px}
-nav{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}
-button{border:0;background:#7652a2;color:white;padding:11px 15px;border-radius:9px;cursor:pointer;font-weight:bold}
-button:hover{filter:brightness(1.12)}
-button:disabled{opacity:.4;cursor:not-allowed}
-nav button{background:#e5d9f1;color:#50386e}
-nav button.active{background:#7652a2;color:white}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-.panel h3{margin-top:0}
-.panel p{color:#766b82}
-.tag{background:#f0e7f8;padding:5px 9px;border-radius:20px;font-size:12px}
-.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-.notice{padding:15px;background:#eee4f8;border-radius:12px;margin:15px 0}
-.hidden{display:none}
-.progress{height:8px;background:#eee;border-radius:10px;margin-top:8px}
-.progress div{height:100%;background:#b38bd8;border-radius:10px}
-input{padding:9px;border:1px solid #ddd;border-radius:8px}
-@media(max-width:650px){
-.stats{grid-template-columns:repeat(2,1fr)}
-.grid{grid-template-columns:1fr}
-header h1{font-size:23px}
+body{margin:0;background:linear-gradient(135deg,#f8e9eb,#f7f0e8 55%,#e9eee5);color:var(--ink);font:15px/1.45 "Trebuchet MS",system-ui,sans-serif}
+button{font:inherit;border:0;border-radius:13px;padding:10px 14px;background:#d9859b;color:white;font-weight:800;cursor:pointer;box-shadow:0 4px 0 #b96d82;transition:.15s}
+button:hover{transform:translateY(-2px);filter:brightness(1.04)}
+button:active{transform:translateY(2px);box-shadow:0 1px 0 #b96d82}
+button:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.soft{background:#f4e4e8;color:#795363;box-shadow:0 4px 0 #e4cbd2}
+.green{background:#72977b;box-shadow:0 4px 0 #52745b}
+.gold{background:#e8bd72;color:#634b27;box-shadow:0 4px 0 #c99e55}
+header{max-width:1280px;margin:auto;padding:20px 22px 10px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo{display:flex;gap:12px;align-items:center}
+.logoMark{width:54px;height:54px;border-radius:18px;background:linear-gradient(145deg,#f7cbd4,#fff1e5);display:grid;place-items:center;font-size:30px;box-shadow:inset 0 3px 7px #fff,0 7px 16px #a36d7a22}
+.logo h1{margin:0;font-size:clamp(22px,4vw,31px);letter-spacing:.2px}
+.logo p{margin:2px 0;color:var(--muted);font-size:13px}
+.topstats{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.pill{background:#fffaf6;border:1px solid var(--line);border-radius:14px;padding:8px 12px;box-shadow:var(--shadow);font-weight:800;white-space:nowrap}
+.pill small{font-weight:500;color:var(--muted);margin-right:5px}
+.wrap{max-width:1280px;margin:10px auto 35px;padding:0 18px}
+.scene{height:390px;position:relative;overflow:hidden;border:8px solid #fffaf7;border-radius:26px;background:linear-gradient(#f6dfe0 0 58%,#d8bca9 58%);box-shadow:var(--shadow);perspective:900px}
+.sunlight{position:absolute;right:8%;top:-35px;width:260px;height:260px;border-radius:50%;background:#fff8d4;opacity:.65;filter:blur(5px)}
+.window{position:absolute;left:5%;top:7%;width:30%;height:49%;border:10px solid #fff8ef;border-radius:15px;background:linear-gradient(145deg,#c8e6df,#f9e6d0);box-shadow:inset 0 0 0 4px #d8b8a9,0 6px 12px #805c4c25}
+.window:before{content:"";position:absolute;left:49%;top:0;height:100%;width:7px;background:#fff8ef}
+.window:after{content:"";position:absolute;left:0;top:49%;height:7px;width:100%;background:#fff8ef}
+.shelf{position:absolute;right:5%;top:11%;width:38%;height:45%;border-radius:9px;background:linear-gradient(90deg,#a87963,#d4a58c 12%,#c08e73 88%,#8e6556);box-shadow:0 9px 0 #815b50,0 16px 20px #68483b30;transform:rotateY(-5deg)}
+.shelf:before,.shelf:after{content:"";position:absolute;left:0;width:100%;height:9px;background:#f0c9a8;box-shadow:0 2px 4px #754d3b55}
+.shelf:before{top:47%}
+.shelf:after{top:94%}
+.shelfFlowers{position:absolute;inset:0;display:flex;justify-content:space-around;align-items:flex-start;padding:4px 8px;pointer-events:none}
+.pot{position:relative;margin-top:24px;width:35px;height:52px;border-radius:5px 5px 12px 12px;background:linear-gradient(90deg,#d6a18e,#f2c7b1,#b77c70);box-shadow:inset -5px 0 #a66e68}
+.pot:before{content:"🌷";position:absolute;top:-30px;left:0;font-size:32px;filter:drop-shadow(1px 2px 1px #795)}
+.counter{position:absolute;left:23%;bottom:10%;width:56%;height:100px;background:linear-gradient(#d9a887 0 20%,#a97860 21% 100%);border-radius:12px 12px 8px 8px;box-shadow:0 14px 0 #855b50,0 24px 22px #62433735;transform:rotateX(2deg)}
+.counter:before{content:"";position:absolute;left:0;top:0;width:100%;height:18px;background:#f0c5a4;border-radius:12px 12px 4px 4px}
+.counter:after{content:"✿  КВІТКОВА МРІЯ  ✿";position:absolute;bottom:22px;left:0;width:100%;text-align:center;color:#ffebdf;font-size:14px;letter-spacing:3px;font-weight:bold}
+.vase{position:absolute;bottom:19%;font-size:50px;filter:drop-shadow(3px 5px 2px #6b514444);z-index:2}
+.vase.one{left:31%}
+.vase.two{right:29%;font-size:43px}
+.stool{position:absolute;right:12%;bottom:7%;width:75px;height:55px;background:#a16f5a;border-radius:12px 12px 5px 5px;box-shadow:0 9px 0 #805748}
+.stool:before{content:"";position:absolute;left:10px;right:10px;top:-10px;height:16px;border-radius:50%;background:#d6a181}
+.plant{position:absolute;left:8%;bottom:7%;font-size:67px;filter:drop-shadow(3px 7px 3px #644)}
+.customer{position:absolute;right:22%;bottom:22%;font-size:58px;z-index:4;filter:drop-shadow(2px 4px 2px #5554);animation:bob 2.8s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-5px)}}
+.sceneLabel{position:absolute;left:18px;bottom:15px;background:#fffaf0df;padding:8px 12px;border-radius:12px;font-weight:800;color:#73535b;box-shadow:0 4px 12px #6544}
+.gamegrid{display:grid;grid-template-columns:235px minmax(0,1fr);gap:15px;margin-top:15px}
+.side,.panel{background:#fffaf6;border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow)}
+.side{padding:12px;height:max-content}
+.nav{width:100%;text-align:left;margin:3px 0;background:transparent;color:#705a64;box-shadow:none}
+.nav.active{background:#f7e4e8;color:#9d536b}
+.nav span{display:inline-block;width:29px}
+.panel{padding:20px;min-height:450px}
+.heading{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+h2{font-size:24px;margin:0 0 4px}
+.sub{margin:0 0 17px;color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.card{background:#fffdf9;border:1px solid #f0e4df;border-radius:16px;padding:15px;box-shadow:0 5px 14px #76565b0a}
+.card h3{margin:0 0 6px;font-size:17px}
+.card p{color:var(--muted);margin:5px 0}
+.flowericon{font-size:34px;float:right;margin-left:8px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.tag{display:inline-block;padding:4px 9px;background:#f8e9ec;color:#9a5b6e;border-radius:30px;font-size:12px;font-weight:700}
+.notice{background:#f4eee5;border:1px solid #ebdfcf;border-radius:14px;padding:12px 14px;margin:12px 0;color:#765e4e}
+.flowergrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.flower{border:1px solid var(--line);background:#fff;border-radius:14px;padding:12px 7px;text-align:center}
+.flower .emoji{font-size:35px}
+.flower b{display:block}
+.flower small{color:var(--muted)}
+.flower button{margin-top:8px;width:100%;padding:8px 5px;font-size:12px}
+.selected{outline:2px solid #d9859b;background:#fff3f5}
+.counterline{display:flex;justify-content:space-between;gap:8px;margin:7px 0;color:var(--muted);font-size:13px}
+.bar{height:8px;border-radius:9px;background:#f0e5e5;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#e69aab,#91b392)}
+.order{display:flex;gap:12px;align-items:flex-start}
+.order .face{font-size:38px}
+.log{font-size:13px;color:#887781;max-height:120px;overflow:auto}
+.log div{padding:5px 0;border-bottom:1px dashed #f0e3df}
+footer{text-align:center;color:#9a8790;font-size:12px;margin:15px}
+.hidden{display:none!important}
+@media(max-width:850px){
+.gamegrid{grid-template-columns:1fr}
+.side{display:grid;grid-template-columns:repeat(4,1fr)}
+.nav{text-align:center;font-size:12px;padding:8px 2px}
+.nav span{display:block;width:auto;font-size:18px}
+.scene{height:330px}
+.counter{left:12%;width:76%}
+.shelf{width:39%}
+.customer{right:16%}
+}
+@media(max-width:550px){
+header{align-items:flex-start;flex-direction:column}
+.topstats{justify-content:flex-start}
+.scene{height:270px}
+.window{width:38%;height:43%}
+.shelf{right:3%;width:45%;height:42%}
+.counter{height:78px;bottom:10%;left:8%;width:84%}
+.counter:after{font-size:10px;letter-spacing:1px}
+.customer{font-size:42px;right:13%;bottom:23%}
+.vase{font-size:36px}
+.plant{font-size:48px}
+.cards{grid-template-columns:1fr}
+.flowergrid{grid-template-columns:repeat(2,1fr)}
+.panel{padding:14px}
+.side{grid-template-columns:repeat(4,1fr)}
 }
 </style>
 </head>
 <body>
-
 <header>
-<h1>🌙 Магічна імперія Соні</h1>
-<p>Від маленької крамниці до найбільшої магічної корпорації!</p>
+<div class="logo">
+<div class="logoMark">🌷</div>
+<div>
+<h1>Квіткова мрія</h1>
+<p>Маленька крамниця Соні • Велика квіткова історія</p>
+</div>
+</div>
+<div class="topstats">
+<div class="pill"><small>💰</small><b id="money">250</b></div>
+<div class="pill"><small>⭐ Рівень</small><b id="level">1</b></div>
+<div class="pill"><small>💗 Репутація</small><b id="rep">0</b></div>
+<div class="pill"><small>📅 День</small><b id="day">1</b></div>
+</div>
 </header>
 
-<div class="container">
-<div class="stats">
-<div class="stat">💰 Золото<strong id="gold">120</strong></div>
-<div class="stat">✨ Енергія<strong id="mana">18</strong></div>
-<div class="stat">🌿 Трави<strong id="herbs">12</strong></div>
-<div class="stat">💎 Кристали<strong id="crystals">3</strong></div>
-<div class="stat">⭐ Репутація<strong id="rep">0</strong></div>
-<div class="stat">🏆 Рівень<strong id="level">1</strong></div>
-<div class="stat">📦 Продажі<strong id="sales">0</strong></div>
-<div class="stat">🧑‍🔬 Працівники<strong id="workers">0</strong></div>
+<div class="wrap">
+<section class="scene" aria-label="Об'ємний інтер'єр квіткового магазину">
+<div class="sunlight"></div>
+<div class="window"></div>
+<div class="shelf">
+<div class="shelfFlowers">
+<div class="pot"></div><div class="pot"></div><div class="pot"></div><div class="pot"></div><div class="pot"></div>
 </div>
+</div>
+<div class="plant">🪴</div>
+<div class="vase one">💐</div>
+<div class="vase two">🌻</div>
+<div class="counter"></div>
+<div class="stool"></div>
+<div class="customer" id="sceneCustomer">👩🏻</div>
+<div class="sceneLabel">🌸 Твоя квіткова крамниця</div>
+</section>
 
-<nav>
-<button class="active" onclick="show('shop',this)">🏪 Крамниця</button>
-<button onclick="show('garden',this)">🌱 Сад</button>
-<button onclick="show('lab',this)">⚗️ Лабораторія</button>
-<button onclick="show('market',this)">🛍️ Ринок</button>
-<button onclick="show('quests',this)">📜 Завдання</button>
-<button onclick="show('upgrades',this)">🛠️ Покращення</button>
-<button onclick="show('world',this)">🗺️ Світ</button>
-<button onclick="show('save',this)">💾 Збереження</button>
-</nav>
-
-<div id="content"></div>
+<div class="gamegrid">
+<aside class="side">
+<button class="nav active" data-tab="shop"><span>🏡</span>Магазин</button>
+<button class="nav" data-tab="bouquet"><span>💐</span>Створити букет</button>
+<button class="nav" data-tab="orders"><span>📝</span>Замовлення</button>
+<button class="nav" data-tab="stock"><span>🌷</span>Склад квітів</button>
+<button class="nav" data-tab="upgrade"><span>✨</span>Розвиток</button>
+<button class="nav" data-tab="story"><span>📖</span>Історія</button>
+<button class="nav" data-tab="save"><span>💾</span>Збереження</button>
+</aside>
+<main class="panel" id="view"></main>
+</div>
+<footer>Квіткова мрія • Прогрес автоматично зберігається у твоєму браузері 🌼</footer>
 </div>
 
 <script>
-const initial={
-gold:120,mana:18,herbs:12,crystals:3,rep:0,
-level:1,xp:0,sales:0,workers:0,
-garden:0,lab:0,shop:0,
-potions:0,charms:0,elixirs:0,
-harvests:0,crafts:0,
-forest:false,caves:false,
-quests:[],last:Date.now()
+const fresh=()=>({
+money:250,level:1,xp:0,rep:0,day:1,
+stock:{rose:12,tulip:14,daisy:15,sunflower:8,peony:4,eucalyptus:10},
+wrap:8,ribbon:6,bouquets:0,sold:0,shop:0,fridge:0,skill:0,
+orders:[],done:[],
+log:['Соня відчинила двері своєї першої квіткової крамниці. Попереду — цілий світ квітів!'],
+crafted:0
+});
+
+let G;
+try{
+G=JSON.parse(localStorage.getItem('sonia_flower_game'))||fresh();
+}catch(e){G=fresh()}
+
+const flowers={
+rose:{name:'Троянда',emoji:'🌹',cost:12,price:0},
+tulip:{name:'Тюльпан',emoji:'🌷',cost:8},
+daisy:{name:'Ромашка',emoji:'🌼',cost:5},
+sunflower:{name:'Соняшник',emoji:'🌻',cost:9},
+peony:{name:'Півонія',emoji:'🪷',cost:20},
+eucalyptus:{name:'Евкаліпт',emoji:'🌿',cost:7}
 };
 
-let game;
-try{
-game=JSON.parse(localStorage.getItem("soniaGame"))||initial;
-}catch(e){game={...initial};}
+const $=x=>document.getElementById(x);
+let bouquet={rose:0,tulip:0,daisy:0,sunflower:0,peony:0,eucalyptus:0};
+let currentWrap='paper';
+let active='shop';
 
 function save(){
-localStorage.setItem("soniaGame",JSON.stringify(game));
+try{localStorage.setItem('sonia_flower_game',JSON.stringify(G))}
+catch(e){console.warn('Не вдалося зберегти гру',e)}
 }
 
-function update(){
-["gold","mana","herbs","crystals","rep","level","sales","workers"].forEach(k=>{
-document.getElementById(k).textContent=game[k];
-});
-save();
+function log(t){
+G.log.unshift(t);
+G.log=G.log.slice(0,20);
 }
 
 function xp(n){
-game.xp+=n;
-while(game.xp>=game.level*50){
-game.xp-=game.level*50;
-game.level++;
-game.gold+=40;
-game.mana+=5;
-alert("🎉 Новий рівень! +40 золота!");
+G.xp+=n;
+while(G.xp>=G.level*60){
+G.xp-=G.level*60;
+G.level++;
+G.money+=50;
+log('🎉 Соня отримала новий рівень! +50 монет.');
 }
 }
 
-function show(page,button){
-document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
-if(button)button.classList.add("active");
-
-let html="";
-
-if(page==="shop"){
-html=`
-<div class="panel">
-<h2>🏪 Крамниця «Місячний Лотос»</h2>
-<p>Ти успадкувала стару магічну крамницю. Тепер настав час перетворити її на імперію!</p>
-<div class="notice">✨ Виготовляй товари, продавай їх, заробляй золото та відкривай нові землі.</div>
-<h3>Твої товари</h3>
-<p>🧪 Зілля: ${game.potions}</p>
-<p>🧿 Обереги: ${game.charms}</p>
-<p>🌟 Еліксири: ${game.elixirs}</p>
-</div>`;
+function stats(){
+$('money').textContent=G.money.toLocaleString('uk-UA');
+$('level').textContent=G.level;
+$('rep').textContent=G.rep;
+$('day').textContent=G.day;
 }
 
-if(page==="garden"){
-html=`
-<div class="panel">
-<h2>🌱 Магічний сад</h2>
-<p>Збирай рослини для виробництва магічних товарів.</p>
-<button onclick="harvest()">Зібрати трави</button>
-<button onclick="upgradeGarden()">Розширити сад</button>
-<p>Рівень саду: ${game.garden+1}</p>
-</div>`;
+function go(t){
+active=t;
+document.querySelectorAll('.nav').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
+render();
 }
 
-if(page==="lab"){
-html=`
-<div class="grid">
-<div class="panel">
-<h3>🧪 Зілля здоров'я</h3>
-<p>Потрібно: 3 трави та 2 енергії.</p>
-<button onclick="craft('potions',3,2)">Виготовити</button>
-</div>
-<div class="panel">
-<h3>🧿 Захисний оберіг</h3>
-<p>Потрібно: 2 трави, 1 кристал, 3 енергії.</p>
-<button onclick="craftCharm()">Виготовити</button>
-</div>
-<div class="panel">
-<h3>🌟 Еліксир місяця</h3>
-<p>Потрібно: 5 трав, 2 кристали, 6 енергії.</p>
-<button onclick="craftElixir()">Виготовити</button>
-</div>
-</div>`;
+document.querySelectorAll('.nav').forEach(b=>b.addEventListener('click',()=>go(b.dataset.tab)));
+
+function render(){
+stats();
+$('view').innerHTML=pages[active]();
+save();
 }
 
-if(page==="market"){
-html=`
-<div class="grid">
-<div class="panel">
-<h3>🧪 Продати зілля</h3>
-<p>На складі: ${game.potions}</p>
-<button onclick="sell('potions',25)">Продати 1 за 25 золота</button>
+function shop(){
+return `<div class="heading">
+<div>
+<h2>🏡 Ласкаво просимо до крамниці!</h2>
+<p class="sub">Соня сьогодні відкриває магазин. Час створити перші букети.</p>
 </div>
-<div class="panel">
-<h3>🧿 Продати оберіг</h3>
-<p>На складі: ${game.charms}</p>
-<button onclick="sell('charms',43)">Продати 1 за 43 золота</button>
+<span class="tag">Рівень магазину ${G.shop+1}</span>
 </div>
-<div class="panel">
-<h3>🌟 Продати еліксир</h3>
-<p>На складі: ${game.elixirs}</p>
-<button onclick="sell('elixirs',88)">Продати 1 за 88 золота</button>
+
+<div class="notice">💌 <b>Порада дня:</b> покупці люблять свіжі квіти та гармонійні кольори. Створи букет у конструкторі й запропонуй його клієнту!</div>
+
+<div class="cards">
+<div class="card">
+<span class="flowericon">💐</span>
+<h3>Букет дня</h3>
+<p>Створено букетів: ${G.crafted}</p>
+<p>Продано букетів: ${G.sold}</p>
+<div class="actions"><button onclick="go('bouquet')">Створити букет</button></div>
 </div>
-</div>`;
+
+<div class="card">
+<span class="flowericon">👩🏻‍🌾</span>
+<h3>Соня-флористка</h3>
+<p>Досвід: ${G.xp} / ${G.level*60}</p>
+<div class="bar"><i style="width:${G.xp/(G.level*60)*100}%"></i></div>
+<p>Що вищий рівень, то більше можливостей відкривається.</p>
+</div>
+
+<div class="card">
+<span class="flowericon">🛍️</span>
+<h3>Сьогоднішні покупці</h3>
+<p>Виконаних замовлень: ${G.done.length}</p>
+<p>Репутація магазину: ${G.rep}</p>
+<div class="actions"><button class="soft" onclick="go('orders')">Перевірити замовлення</button></div>
+</div>
+
+<div class="card">
+<span class="flowericon">🪴</span>
+<h3>Затишок магазину</h3>
+<p>Покращень придбано: ${G.shop+G.fridge+G.skill}</p>
+<p>Наступний робочий день принесе нових клієнтів.</p>
+<div class="actions"><button class="green" onclick="nextDay()">Почати наступний день</button></div>
+</div>
+</div>
+
+<h3 style="margin:18px 0 7px">Щоденник крамниці</h3>
+<div class="log">${G.log.slice(0,5).map(x=>'<div>'+x+'</div>').join('')}</div>`;
 }
 
-if(page==="quests"){
-html=`
-<div class="panel">
-<h2>📜 Завдання</h2>
-<p>Продай 3 товари — нагорода 60 золота.</p>
-${game.sales>=3?'<button onclick="claimQuest(\'sales\')">Забрати нагороду</button>':'<span class="tag">Виконано '+game.sales+'/3</span>'}
-<hr>
-<p>Збери трави 3 рази — нагорода 5 кристалів.</p>
-${game.harvests>=3&&!game.quests.includes("harvest")?'<button onclick="claimQuest(\'harvest\')">Забрати нагороду</button>':'<span class="tag">Виконано '+Math.min(game.harvests,3)+'/3</span>'}
-<hr>
-<p>Виготов 5 товарів — нагорода 100 золота.</p>
-${game.crafts>=5&&!game.quests.includes("craft")?'<button onclick="claimQuest(\'craft\')">Забрати нагороду</button>':'<span class="tag">Виконано '+Math.min(game.crafts,5)+'/5</span>'}
-</div>`;
-}
+function bouquetPage(){
+let count=Object.values(bouquet).reduce((a,b)=>a+b,0);
+let names=Object.entries(bouquet).filter(x=>x[1]).map(([k,v])=>flowers[k].emoji+' '+v).join(' · ')||'Поки що порожньо';
+let value=Object.entries(bouquet).reduce((a,[k,v])=>a+v*flowers[k].cost*2.3,0)+G.wrap*0.0;
 
-if(page==="upgrades"){
-html=`
-<div class="grid">
-<div class="panel">
-<h3>🏪 Покращити крамницю</h3>
-<p>Вартість: ${90+game.shop*75} золота.</p>
-<button onclick="upgradeShop()">Покращити</button>
-<p>Рівень: ${game.shop+1}</p>
-</div>
-<div class="panel">
-<h3>⚗️ Покращити лабораторію</h3>
-<p>Вартість: 100 золота та 1 кристал.</p>
-<button onclick="upgradeLab()">Покращити</button>
-<p>Рівень: ${game.lab+1}</p>
-</div>
-<div class="panel">
-<h3>🧑‍🔬 Найняти працівника</h3>
-<p>Вартість: ${140+game.workers*100} золота.</p>
-<button onclick="hire()">Найняти</button>
-</div>
-</div>`;
-}
+return `<h2>💐 Майстерня букетів</h2>
+<p class="sub">Обери квіти, склади композицію та підбери пакування.</p>
 
-if(page==="world"){
-html=`
-<div class="grid">
-<div class="panel">
-<h3>🏘️ Місто чарівників</h3>
-<p>Тут почалася твоя історія.</p>
-<span class="tag">Відкрито</span>
+<div class="notice">
+Твій букет: <b>${names}</b><br>
+Кількість квітів: <b>${count}</b> • Орієнтовна ціна: <b>${Math.round(value+25)} монет</b>
 </div>
-<div class="panel">
-<h3>🌳 Зачарований ліс</h3>
-<p>Нові ресурси та рідкісні рослини.</p>
-${game.forest?'<span class="tag">Відкрито</span>':'<button onclick="unlockForest()">Відкрити за 80 золота</button>'}
+
+<div class="flowergrid">
+${Object.entries(flowers).map(([k,f])=>`
+<div class="flower ${bouquet[k]?'selected':''}">
+<div class="emoji">${f.emoji}</div>
+<b>${f.name}</b>
+<small>На складі: ${G.stock[k]}</small>
+<div>
+<button class="soft" onclick="addFlower('${k}',-1)">−</button>
+<b>${bouquet[k]}</b>
+<button onclick="addFlower('${k}',1)">+</button>
 </div>
-<div class="panel">
-<h3>💎 Кришталеві печери</h3>
-<p>Джерело магічних кристалів.</p>
-${game.caves?'<span class="tag">Відкрито</span>':'<button onclick="unlockCaves()">Відкрити за 4 кристали та 4 рівень</button>'}
+</div>`).join('')}
+</div>
+
+<div class="cards" style="margin-top:12px">
+<div class="card">
+<h3>🎀 Пакування</h3>
+<p>Папір та стрічка входять у вартість. Обери стиль:</p>
+<div class="actions">
+<button class="${currentWrap==='paper'?'':'soft'}" onclick="currentWrap='paper';render()">Крафтовий папір</button>
+<button class="${currentWrap==='pink'?'':'soft'}" onclick="currentWrap='pink';render()">Рожевий папір</button>
+<button class="${currentWrap==='lux'?'':'soft'}" onclick="currentWrap='lux';render()">Преміум</button>
+</div>
+</div>
+
+<div class="card">
+<h3>✨ Завершити композицію</h3>
+<p>Для букета потрібно щонайменше 3 квітки та 1 пакування.</p>
+<p>Пакування: ${G.wrap} • Стрічки: ${G.ribbon}</p>
+<div class="actions">
+<button onclick="finishBouquet()">Зібрати букет</button>
+<button class="soft" onclick="clearBouquet()">Очистити</button>
+</div>
 </div>
 </div>`;
 }
 
-if(page==="save"){
-html=`
-<div class="panel">
-<h2>💾 Збереження</h2>
-<p>Прогрес автоматично зберігається у твоєму браузері.</p>
-<button onclick="save()">Зберегти зараз</button>
-<button onclick="exportSave()">Завантажити резервну копію</button>
-<br><br>
-<input type="file" id="file" accept=".json" onchange="importSave(event)">
-<br><br>
-<button onclick="resetGame()">Почати спочатку</button>
+function ordersPage(){
+let order=G.orders[0];
+return `<h2>📝 Замовлення покупців</h2>
+<p class="sub">Уважно читай побажання клієнтів — задоволені покупці повертаються!</p>
+${order?`
+<div class="card order">
+<div class="face">${order.face}</div>
+<div>
+<span class="tag">Нове замовлення</span>
+<h3>${order.name}</h3>
+<p>«${order.text}»</p>
+<p>Потрібно: <b>${order.need}</b> • Бюджет: <b>${order.budget} монет</b></p>
+<p>Нагорода за точне виконання: ${order.reward} монет + репутація</p>
+<div class="actions">
+<button onclick="fulfill()">Віддати готовий букет</button>
+<button class="soft" onclick="skipOrder()">Відмовитися</button>
+</div>
+</div>
+</div>`:`
+<div class="card">
+<h3>Поки немає активних замовлень</h3>
+<p>Нові покупці з'являться, коли почнеться наступний день.</p>
+<button onclick="nextDay()">Запросити покупців</button>
+</div>`}
+<div class="notice">💡 Порада: створюй букети з різних квітів — складні композиції коштують дорожче.</div>`;
+}
+
+function stockPage(){
+return `<h2>🌷 Склад квітів</h2>
+<p class="sub">Стеж за запасами та купуй свіжі квіти перед новими замовленнями.</p>
+
+<div class="flowergrid">
+${Object.entries(flowers).map(([k,f])=>`
+<div class="flower">
+<div class="emoji">${f.emoji}</div>
+<b>${f.name}</b>
+<small>Є ${G.stock[k]} • ${f.cost} монет/шт.</small>
+<button onclick="buyFlower('${k}',5)">Купити 5 (${f.cost*5})</button>
+</div>`).join('')}
+</div>
+
+<div class="cards" style="margin-top:12px">
+<div class="card">
+<h3>📦 Пакувальний папір</h3>
+<p>Залишок: ${G.wrap}</p>
+<button class="soft" onclick="buySupply('wrap',5,15)">Купити 5 за 15</button>
+</div>
+<div class="card">
+<h3>🎀 Стрічки</h3>
+<p>Залишок: ${G.ribbon}</p>
+<button class="soft" onclick="buySupply('ribbon',5,12)">Купити 5 за 12</button>
+</div>
 </div>`;
 }
 
-document.getElementById("content").innerHTML=html;
-update();
+function upgradePage(){
+return `<h2>✨ Розвиток квіткової студії</h2>
+<p class="sub">Вкладай прибуток у магазин, щоб залучати більше клієнтів.</p>
+
+<div class="cards">
+<div class="card">
+<span class="flowericon">🪟</span>
+<h3>Нова вітрина</h3>
+<p>Підвищує привабливість магазину та бонус до продажів.</p>
+<p>Рівень: ${G.shop} • Ціна: ${100+G.shop*90}</p>
+<button onclick="upgrade('shop',${100+G.shop*90})">Покращити</button>
+</div>
+
+<div class="card">
+<span class="flowericon">❄️</span>
+<h3>Квітковий холодильник</h3>
+<p>Квіти довше залишаються свіжими. Бонус до досвіду.</p>
+<p>Рівень: ${G.fridge} • Ціна: ${130+G.fridge*110}</p>
+<button onclick="upgrade('fridge',${130+G.fridge*110})">Придбати</button>
+</div>
+
+<div class="card">
+<span class="flowericon">✂️</span>
+<h3>Професійні інструменти</h3>
+<p>Дозволяють створювати дорожчі букети.</p>
+<p>Рівень: ${G.skill} • Ціна: ${160+G.skill*120}</p>
+<button onclick="upgrade('skill',${160+G.skill*120})">Покращити</button>
+</div>
+
+<div class="card">
+<span class="flowericon">🏆</span>
+<h3>Мрія флористки</h3>
+<p>Досягни 5 рівня та 30 репутації, щоб відкрити власну студію.</p>
+<span class="tag">${G.level>=5&&G.rep>=30?'Умова виконана!':'У процесі'}</span>
+</div>
+</div>`;
 }
 
-function harvest(){
-let n=4+game.garden*2+Math.floor(Math.random()*4);
-game.herbs+=n;
-game.harvests++;
-xp(8);
-alert("🌿 Зібрано "+n+" чарівних трав!");
-refresh();
+function storyPage(){
+return `<h2>📖 Історія Соні</h2>
+<p class="sub">Кожна велика квіткова імперія починається з одного букета.</p>
+
+<div class="card">
+<h3>Глава 1. Перший ранок</h3>
+<p>Соня давно мріяла працювати серед квітів. Одного весняного ранку вона отримала ключі від маленького магазину на затишній вуличці. На полицях стояли перші троянди, тюльпани й ромашки.</p>
+<p>«Я хочу, щоб кожен букет дарував комусь щастя», — сказала Соня й узяла до рук першу стрічку.</p>
+</div>
+
+<div class="card" style="margin-top:12px">
+<h3>Наступні глави</h3>
+<p>🌸 Глава 2 — Таємниця старої оранжереї (відкриється на 2 рівні)</p>
+<p>💍 Глава 3 — Весілля у королівському саду (відкриється на 4 рівні)</p>
+<p>🏡 Глава 4 — Власна квіткова студія (5 рівень і 30 репутації)</p>
+</div>`;
 }
 
-function craft(id,h,m){
-if(game.herbs<h||game.mana<m)return alert("Недостатньо ресурсів!");
-game.herbs-=h;game.mana-=m;game[id]++;
-game.crafts++;xp(10+game.lab*2);
-refresh();
+function savePage(){
+return `<h2>💾 Збереження гри</h2>
+<p class="sub">Прогрес автоматично зберігається в цьому браузері.</p>
+
+<div class="cards">
+<div class="card">
+<h3>📤 Резервна копія</h3>
+<p>Завантаж файл, щоб перенести гру на інший пристрій.</p>
+<button onclick="exportSave()">Завантажити збереження</button>
+</div>
+
+<div class="card">
+<h3>📥 Відновити гру</h3>
+<input type="file" accept=".json" onchange="importSave(event)">
+</div>
+
+<div class="card">
+<h3>🔄 Почати спочатку</h3>
+<p>Увага: поточний прогрес буде видалено.</p>
+<button style="background:#b96b79" onclick="resetGame()">Скинути прогрес</button>
+</div>
+</div>`;
 }
 
-function craftCharm(){
-if(game.herbs<2||game.crystals<1||game.mana<3)return alert("Недостатньо ресурсів!");
-game.herbs-=2;game.crystals--;game.mana-=3;
-game.charms++;game.crafts++;xp(15);refresh();
+const pages={
+shop,
+bouquet:bouquetPage,
+orders:ordersPage,
+stock:stockPage,
+upgrade:upgradePage,
+story:storyPage,
+save:savePage
+};
+
+function addFlower(k,n){
+if(n>0){
+if(G.stock[k]<=0){alert('Ці квіти закінчилися!');return}
+G.stock[k]--;
+bouquet[k]++;
+}else if(bouquet[k]>0){
+bouquet[k]--;
+G.stock[k]++;
+}
+render();
 }
 
-function craftElixir(){
-if(game.herbs<5||game.crystals<2||game.mana<6)return alert("Недостатньо ресурсів!");
-game.herbs-=5;game.crystals-=2;game.mana-=6;
-game.elixirs++;game.crafts++;xp(25);refresh();
+function clearBouquet(){
+Object.keys(bouquet).forEach(k=>{
+G.stock[k]+=bouquet[k];
+bouquet[k]=0;
+});
+render();
 }
 
-function sell(id,price){
-if(game[id]<1)return alert("Немає товару на складі!");
-game[id]--;
-game.gold+=Math.round(price*(1+game.shop*.05));
-game.sales++;game.rep++;
-xp(7);refresh();
+function finishBouquet(){
+let n=Object.values(bouquet).reduce((a,b)=>a+b,0);
+if(n<3){alert('Додай щонайменше 3 квітки до букета.');return}
+if(G.wrap<1||G.ribbon<1){alert('Потрібні пакувальний папір і стрічка.');return}
+
+G.wrap--;
+G.ribbon--;
+
+let variety=Object.values(bouquet).filter(v=>v>0).length;
+let base=Object.entries(bouquet).reduce((a,[k,v])=>a+v*flowers[k].cost*2.2,0);
+let value=Math.round(base+variety*8+G.skill*12+(currentWrap==='lux'?25:currentWrap==='pink'?10:0));
+
+G.bouquets++;
+G.crafted++;
+G.ready=(G.ready||[]);
+G.ready.push({value,n,variety,flowers:{...bouquet},wrap:currentWrap});
+
+Object.keys(bouquet).forEach(k=>bouquet[k]=0);
+
+xp(12+variety*3);
+log('💐 Соня створила новий букет вартістю '+value+' монет.');
+alert('Букет готовий! Його орієнтовна ціна — '+value+' монет.');
+render();
 }
 
-function upgradeGarden(){
-let cost=55+game.garden*45;
-if(game.gold<cost||game.herbs<5)return alert("Потрібно більше ресурсів!");
-game.gold-=cost;game.herbs-=5;game.garden++;refresh();
+function buyFlower(k,n){
+let price=flowers[k].cost*n;
+if(G.money<price){alert('Не вистачає монет.');return}
+G.money-=price;
+G.stock[k]+=n;
+log('🌷 Закуплено '+n+' квіток: '+flowers[k].name+'.');
+render();
 }
 
-function upgradeShop(){
-let cost=90+game.shop*75;
-if(game.gold<cost)return alert("Недостатньо золота!");
-game.gold-=cost;game.shop++;refresh();
+function buySupply(k,n,p){
+if(G.money<p){alert('Не вистачає монет.');return}
+G.money-=p;
+G[k]+=n;
+render();
 }
 
-function upgradeLab(){
-if(game.gold<100||game.crystals<1)return alert("Недостатньо ресурсів!");
-game.gold-=100;game.crystals--;game.lab++;refresh();
+function fulfill(){
+if(!G.ready||!G.ready.length){
+alert('Спочатку створи хоча б один букет у майстерні!');
+return;
+}
+let o=G.orders[0];
+if(!o)return;
+
+let b=G.ready.shift();
+if(b.value<o.budget*.55){
+alert('Покупець очікує більш пишний букет. Створи дорожчу композицію!');
+G.ready.unshift(b);
+return;
 }
 
-function hire(){
-let cost=140+game.workers*100;
-if(game.gold<cost)return alert("Недостатньо золота!");
-game.gold-=cost;game.workers++;refresh();
+let reward=o.reward+Math.round(b.value*.25);
+G.money+=reward;
+G.rep+=5;
+G.sold++;
+G.done.push(o.name);
+G.orders.shift();
+xp(25);
+log('💝 '+o.name+' придбав букет! Соня заробила '+reward+' монет.');
+
+if(G.level>=2&&G.done.length===3){
+log('🌿 Соню запросили до старої міської оранжереї!');
+}
+render();
 }
 
-function unlockForest(){
-if(game.gold<80)return alert("Недостатньо золота!");
-game.gold-=80;game.forest=true;xp(20);refresh();
+function skipOrder(){
+G.orders.shift();
+G.rep=Math.max(0,G.rep-1);
+log('Клієнт пішов до іншої крамниці.');
+render();
 }
 
-function unlockCaves(){
-if(game.level<4||game.crystals<4)return alert("Потрібен 4 рівень та 4 кристали!");
-game.crystals-=4;game.caves=true;xp(35);refresh();
+function nextDay(){
+G.day++;
+
+let people=[
+{name:'Марічка',face:'👩🏼',text:'Хочу ніжний букет для подруги. Люблю пастельні кольори!',need:'Романтичний букет',budget:110,reward:45},
+{name:'Остап',face:'🧔🏻',text:'Потрібен яскравий букет для мами. Щось сонячне!',need:'Яскрава композиція',budget:130,reward:55},
+{name:'Пані Олена',face:'👩🏻‍🦳',text:'Мені потрібні елегантні квіти на день народження.',need:'Святковий букет',budget:160,reward:65},
+{name:'Аліна',face:'👩🏽',text:'Шукаю красивий букет із трояндами!',need:'Букет із троянд',budget:145,reward:60},
+{name:'Дмитро',face:'👨🏻',text:'Хочу подарувати коханій щось особливе.',need:'Пишний букет',budget:190,reward:75}
+];
+
+if(!G.orders.length){
+let p=people[Math.floor(Math.random()*people.length)];
+G.orders.push(p);
+log('🔔 До магазину завітав новий покупець — '+p.name+'.');
+}else{
+G.money+=G.shop*5;
 }
 
-function claimQuest(id){
-if(game.quests.includes(id))return;
-if(id==="sales"&&game.sales>=3)game.gold+=60;
-if(id==="harvest"&&game.harvests>=3)game.crystals+=5;
-if(id==="craft"&&game.crafts>=5)game.gold+=100;
-game.quests.push(id);xp(15);refresh();
+if(G.fridge)log('❄️ Холодильник зберіг квіти свіжими.');
+
+render();
+go('orders');
 }
 
-function refresh(){
-update();
-let active=document.querySelector("nav button.active");
-let page=active?.getAttribute("onclick")?.match(/'([^']+)'/)?.[1]||"shop";
-show(page,active);
+function upgrade(k,p){
+if(G.money<p){alert('Не вистачає монет.');return}
+G.money-=p;
+G[k]++;
+xp(15);
+log('✨ Магазин отримав покращення!');
+render();
 }
 
 function exportSave(){
-let blob=new Blob([JSON.stringify(game)],{type:"application/json"});
-let a=document.createElement("a");
-a.href=URL.createObjectURL(blob);
-a.download="sonia-save.json";
+let a=document.createElement('a');
+let b=new Blob([JSON.stringify({G,bouquet},null,2)],{type:'application/json'});
+a.href=URL.createObjectURL(b);
+a.download='kvіtkova-mriya-save.json';
 a.click();
+URL.revokeObjectURL(a.href);
 }
 
 function importSave(e){
-let reader=new FileReader();
-reader.onload=()=>{
+let r=new FileReader();
+r.onload=()=>{
 try{
-game=JSON.parse(reader.result);
-save();location.reload();
-}catch(err){alert("Помилка файлу!");}
+let x=JSON.parse(r.result);
+G=x.G||x;
+bouquet=x.bouquet||bouquet;
+render();
+alert('Збереження відновлено!');
+}catch(_){
+alert('Не вдалося прочитати файл.');
+}
 };
-reader.readAsText(e.target.files[0]);
+if(e.target.files[0])r.readAsText(e.target.files[0]);
 }
 
 function resetGame(){
-if(confirm("Видалити весь прогрес?")){
-game={...initial};
-save();location.reload();
+if(confirm('Почати нову гру? Поточний прогрес буде втрачено.')){
+G=fresh();
+bouquet={rose:0,tulip:0,daisy:0,sunflower:0,peony:0,eucalyptus:0};
+render();
 }
 }
 
-function tick(){
-let now=Date.now();
-let minutes=Math.floor((now-game.last)/60000);
-if(minutes>0){
-game.gold+=minutes*game.workers*2;
-game.last=now;update();
-}
-}
-setInterval(tick,10000);
-
-show("shop",document.querySelector("nav button"));
+render();
 </script>
 </body>
 </html>
