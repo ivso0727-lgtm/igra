@@ -1,0 +1,479 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATELIER FLEUR — Your Bouquet</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --black:#171615;
+  --cream:#f5f0e8;
+  --paper:#ebe4d9;
+  --gold:#b99a69;
+  --muted:#888078;
+  --wine:#57252f;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--black);font-family:Manrope,sans-serif}
+button{font:inherit;cursor:pointer}
+.top{height:42px;background:var(--black);color:#d7c3a0;text-align:center;padding:12px;font-size:9px;letter-spacing:4px}
+header{height:90px;border-bottom:1px solid #ded6cb;display:flex;align-items:center;justify-content:space-between;padding:0 6%;background:var(--cream)}
+.brand{font:600 29px 'Cormorant Garamond',serif;letter-spacing:5px}
+.brand small{display:block;text-align:center;font:9px Manrope;letter-spacing:5px;color:var(--gold);margin-top:-3px}
+.header-note{font-size:10px;letter-spacing:2px;color:#777}
+.hero{min-height:410px;background:#201e1c;color:#f8f1e6;display:grid;grid-template-columns:1fr 1fr;align-items:center;padding:65px 9%;gap:30px;overflow:hidden}
+.hero-kicker{font-size:10px;letter-spacing:5px;color:#c8ad80}
+.hero h1{font:400 clamp(48px,7vw,82px)/.95 'Cormorant Garamond',serif;margin:24px 0}
+.hero p{max-width:370px;color:#c9c0b4;font-size:12px;line-height:2}
+.hero button{margin-top:22px;background:var(--gold);border:0;padding:16px 29px;color:#171615;font-size:10px;letter-spacing:2px;text-transform:uppercase}
+.hero-art{height:300px;display:flex;align-items:center;justify-content:center;position:relative}
+.hero-art:before{content:"";position:absolute;width:260px;height:260px;border:1px solid #a78a5b;border-radius:50%;opacity:.6}
+.hero-bouquet{font-size:clamp(100px,18vw,190px);filter:drop-shadow(0 18px 16px #0008);z-index:1}
+.hero-caption{position:absolute;bottom:0;right:5%;font:italic 17px 'Cormorant Garamond',serif;color:#c8ad80}
+.section-title{text-align:center;padding:65px 15px 32px}
+.section-title span{font-size:9px;letter-spacing:5px;color:var(--gold)}
+.section-title h2{font:400 44px 'Cormorant Garamond',serif;margin:12px 0}
+.section-title p{font-size:11px;color:var(--muted)}
+.builder{max-width:1250px;margin:auto;padding:0 25px 80px;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(330px,.9fr);gap:28px;align-items:start}
+.controls{display:flex;flex-direction:column;gap:18px}
+.block{background:#fffdf9;border:1px solid #e8dfd4;padding:25px}
+.block-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:19px}
+.block-head h3{font:500 25px 'Cormorant Garamond',serif;margin:0}
+.step{font-size:9px;letter-spacing:2px;color:var(--gold)}
+.help{font-size:10px;color:var(--muted);margin-top:-10px;margin-bottom:17px}
+.flowers{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.flower{border:1px solid #e9e1d8;background:#faf8f4;padding:12px 7px;text-align:center;transition:.2s}
+.flower.active{border:1px solid var(--gold);background:#f3ebdf}
+.flower .emoji{font-size:34px;display:block;margin-bottom:5px}
+.flower strong{font-size:10px;font-weight:600;display:block}
+.flower small{font-size:9px;color:var(--muted)}
+.quantity{display:flex;justify-content:center;align-items:center;gap:12px;margin-top:10px}
+.quantity button{width:25px;height:25px;border:1px solid #d8cabb;background:white;color:#333;padding:0}
+.quantity b{font-size:12px;min-width:12px}
+.options{display:flex;flex-wrap:wrap;gap:9px}
+.option{border:1px solid #e5dbce;background:#faf8f4;padding:11px 13px;font-size:10px;color:#514b43}
+.option.active{border-color:var(--gold);background:#eee4d5}
+.option .sample{display:block;font-size:20px;margin-bottom:4px}
+.color{width:31px;height:31px;border-radius:50%;border:2px solid white;box-shadow:0 0 0 1px #ddd;cursor:pointer}
+.color.active{box-shadow:0 0 0 2px var(--gold)}
+.preview-wrap{position:sticky;top:15px}
+.preview{background:#e9e1d5;min-height:525px;padding:25px;position:relative;overflow:hidden}
+.preview:before{content:"";position:absolute;inset:12px;border:1px solid #ffffff80;pointer-events:none}
+.preview-label{text-align:center;font-size:9px;letter-spacing:4px;color:#877966;position:relative}
+.canvas{height:370px;display:flex;align-items:center;justify-content:center;position:relative}
+.bouquet{position:relative;width:280px;height:330px;display:flex;align-items:center;justify-content:center}
+.stems{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);width:190px;height:180px;background:linear-gradient(110deg,transparent 47%,#687a55 48%,#84926b 50%,transparent 52%);clip-path:polygon(48% 0,53% 0,75% 100%,25% 100%);opacity:.8}
+.wrap-shape{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);width:245px;height:195px;clip-path:polygon(5% 0,95% 0,75% 100%,25% 100%);background:#eee4d8;filter:drop-shadow(0 10px 8px #0002)}
+.wrap-inner{position:absolute;bottom:25px;left:50%;transform:translateX(-50%);width:205px;height:180px;clip-path:polygon(0 0,100% 0,75% 100%,25% 100%);background:#f8f4ec}
+.flower-heads{position:absolute;top:30px;left:50%;transform:translateX(-50%);width:255px;height:225px}
+.head{position:absolute;font-size:39px;filter:drop-shadow(1px 3px 2px #0002);transition:.3s;transform:translate(-50%,-50%)}
+.head:nth-child(1){left:50%;top:16%}
+.head:nth-child(2){left:30%;top:25%}
+.head:nth-child(3){left:70%;top:25%}
+.head:nth-child(4){left:18%;top:45%}
+.head:nth-child(5){left:82%;top:45%}
+.head:nth-child(6){left:39%;top:47%}
+.head:nth-child(7){left:61%;top:47%}
+.head:nth-child(8){left:50%;top:65%}
+.head:nth-child(9){left:27%;top:65%}
+.head:nth-child(10){left:73%;top:65%}
+.ribbon{position:absolute;bottom:80px;left:50%;transform:translateX(-50%);font-size:43px;z-index:5;filter:drop-shadow(0 2px 2px #0002)}
+.decorations{position:absolute;inset:20px;pointer-events:none;font-size:22px}
+.decorations span{position:absolute}
+.wrap-name{position:absolute;bottom:15px;left:0;right:0;text-align:center;font-size:9px;letter-spacing:3px;color:#75675a}
+.summary{background:#fffdf9;padding:22px;margin-top:12px}
+.summary h3{font:500 24px 'Cormorant Garamond',serif;margin:0 0 12px}
+.summary-line{display:flex;justify-content:space-between;font-size:10px;padding:8px 0;border-bottom:1px solid #eee8df;color:#71675e}
+.total{display:flex;justify-content:space-between;padding:15px 0;font-size:13px;font-weight:700}
+.send{width:100%;background:var(--black);color:white;border:0;padding:17px;font-size:10px;letter-spacing:2px;text-transform:uppercase}
+.send:hover{background:#44372e}
+.reset{width:100%;margin-top:8px;padding:12px;background:transparent;border:1px solid #ddd2c3;color:#746b60;font-size:9px;letter-spacing:2px}
+.note{width:100%;border:1px solid #e5dbce;background:#faf8f4;padding:13px;font:12px Manrope;resize:vertical;min-height:70px}
+footer{background:#191817;color:#c9b99e;text-align:center;padding:45px 15px}
+footer .brand{font-size:25px}
+footer p{font-size:9px;letter-spacing:3px;margin-top:15px}
+@media(max-width:800px){
+.hero{grid-template-columns:1fr;text-align:center;padding:55px 8%}
+.hero p{margin:auto}
+.hero-art{height:210px}
+.builder{grid-template-columns:1fr;padding:0 13px 55px}
+.preview-wrap{position:static;grid-row:1}
+.preview{min-height:450px}
+.canvas{height:330px}
+.bouquet{transform:scale(.85)}
+}
+@media(max-width:450px){
+header{padding:0 15px;height:75px}
+.brand{font-size:23px}
+.header-note{font-size:8px}
+.block{padding:17px}
+.flowers{grid-template-columns:repeat(2,1fr)}
+.preview{padding:18px}
+}
+</style>
+</head>
+<body>
+
+<div class="top">FLOWERS ARE THE LANGUAGE OF LOVE · EST. WITH LOVE</div>
+
+<header>
+  <div class="brand">ATELIER FLEUR<small>FLOWER DESIGN STUDIO</small></div>
+  <div class="header-note">A BOUQUET MADE BY YOU</div>
+</header>
+
+<section class="hero">
+  <div>
+    <div class="hero-kicker">THE ART OF FLOWERS</div>
+    <h1>Your flowers.<br>Your rules.</h1>
+    <p>Створи композицію, яка відображає саме тебе. Обирай квіти, поєднуй відтінки, додавай деталі та створюй власний шедевр.</p>
+    <button onclick="document.getElementById('studio').scrollIntoView({behavior:'smooth'})">Create your bouquet ↗</button>
+  </div>
+  <div class="hero-art">
+    <div class="hero-bouquet">💐</div>
+    <div class="hero-caption">Made with love, chosen by you.</div>
+  </div>
+</section>
+
+<div class="section-title" id="studio">
+  <span>YOUR PERSONAL FLOWER ATELIER</span>
+  <h2>Створи свій букет</h2>
+  <p>Кожна деталь — твій вибір. Жодних правил, лише твій смак.</p>
+</div>
+
+<main class="builder">
+  <div class="controls">
+
+    <section class="block">
+      <div class="block-head"><h3>01. Обери квіти</h3><span class="step">FLOWERS</span></div>
+      <p class="help">Натискай «+» та «−», щоб змінювати кількість квітів.</p>
+      <div class="flowers" id="flowers"></div>
+    </section>
+
+    <section class="block">
+      <div class="block-head"><h3>02. Пакування</h3><span class="step">WRAPPING</span></div>
+      <div class="options" id="wrappings"></div>
+    </section>
+
+    <section class="block">
+      <div class="block-head"><h3>03. Стрічка</h3><span class="step">RIBBON</span></div>
+      <div class="options" id="ribbons"></div>
+    </section>
+
+    <section class="block">
+      <div class="block-head"><h3>04. Прикраси</h3><span class="step">DETAILS</span></div>
+      <p class="help">Маленькі деталі, які роблять букет особливим.</p>
+      <div class="options" id="decorations"></div>
+    </section>
+
+    <section class="block">
+      <div class="block-head"><h3>05. Особливе побажання</h3><span class="step">YOUR MESSAGE</span></div>
+      <textarea class="note" id="message" placeholder="Наприклад: хочу ніжний, романтичний букет у стилі old money..."></textarea>
+    </section>
+
+  </div>
+
+  <aside class="preview-wrap">
+    <div class="preview">
+      <div class="preview-label">YOUR UNIQUE COMPOSITION</div>
+      <div class="canvas">
+        <div class="bouquet">
+          <div class="stems"></div>
+          <div class="wrap-shape" id="wrapShape"></div>
+          <div class="wrap-inner" id="wrapInner"></div>
+          <div class="flower-heads" id="flowerHeads"></div>
+          <div class="ribbon" id="ribbonView">🎀</div>
+          <div class="decorations" id="decorationView"></div>
+        </div>
+      </div>
+      <div class="wrap-name" id="wrapName">YOUR BOUQUET</div>
+    </div>
+
+    <div class="summary">
+      <h3>Your composition</h3>
+      <div id="summary"></div>
+      <div class="total"><span>Кількість квітів</span><span id="totalFlowers">0</span></div>
+      <button class="send" onclick="sendBouquet()">Надіслати мій букет ↗</button>
+      <button class="reset" onclick="resetAll()">ПОЧАТИ СПОЧАТКУ</button>
+    </div>
+  </aside>
+</main>
+
+<footer>
+  <div class="brand">ATELIER FLEUR</div>
+  <p>EVERY FLOWER TELLS A STORY</p>
+</footer>
+
+<script>
+const flowerData=[
+{id:'rose',name:'Троянди',emoji:'🌹',price:45},
+{id:'peony',name:'Півонії',emoji:'🪷',price:90},
+{id:'tulip',name:'Тюльпани',emoji:'🌷',price:35},
+{id:'orchid',name:'Орхідеї',emoji:'🪻',price:110},
+{id:'daisy',name:'Ромашки',emoji:'🌼',price:25},
+{id:'sun',name:'Соняшники',emoji:'🌻',price:40},
+{id:'hydrangea',name:'Гортензії',emoji:'💠',price:100},
+{id:'lily',name:'Лілії',emoji:'⚜️',price:75},
+{id:'carnation',name:'Гвоздики',emoji:'🌺',price:30}
+];
+
+const wrappingData=[
+{id:'cream',name:'Ivory',color:'#eee4d8',inner:'#faf5ed',price:30},
+{id:'black',name:'Black',color:'#292725',inner:'#48413e',price:45},
+{id:'wine',name:'Bordeaux',color:'#642d3b',inner:'#853f4c',price:45},
+{id:'pink',name:'Blush',color:'#e7b9bb',inner:'#f4d8d5',price:35},
+{id:'kraft',name:'Kraft',color:'#b99a72',inner:'#d6bd99',price:25},
+{id:'white',name:'Pure white',color:'#ffffff',inner:'#f6f3ed',price:30}
+];
+
+const ribbonData=[
+{id:'black',name:'Чорна',emoji:'🎀',color:'#252321',price:15},
+{id:'gold',name:'Золота',emoji:'🎗️',color:'#b99a69',price:25},
+{id:'pink',name:'Рожева',emoji:'🎀',color:'#d99da9',price:15},
+{id:'wine',name:'Бордова',emoji:'🎀',color:'#692d3c',price:20},
+{id:'cream',name:'Молочна',emoji:'🎀',color:'#e7d8bd',price:15}
+];
+
+const decorationData=[
+{id:'pearl',name:'Перлини',emoji:'🤍',price:35},
+{id:'gold',name:'Золотий акцент',emoji:'✨',price:40},
+{id:'brooch',name:'Брошка',emoji:'💎',price:65},
+{id:'heart',name:'Підвіска-серце',emoji:'♡',price:45},
+{id:'butterfly',name:'Метелик',emoji:'🦋',price:30},
+{id:'charm',name:'Золота підвіска',emoji:'♛',price:70}
+];
+
+const state={
+flowers:{},
+wrapping:'cream',
+ribbon:'black',
+decorations:[],
+message:''
+};
+
+const $=id=>document.getElementById(id);
+
+function renderFlowerOptions(){
+$('flowers').innerHTML=flowerData.map(f=>`
+<div class="flower ${state.flowers[f.id]?'active':''}">
+<span class="emoji">${f.emoji}</span>
+<strong>${f.name}</strong>
+<small>${f.price} грн / шт.</small>
+<div class="quantity">
+<button onclick="changeFlower('${f.id}',-1)">−</button>
+<b>${state.flowers[f.id]||0}</b>
+<button onclick="changeFlower('${f.id}',1)">+</button>
+</div>
+</div>`).join('');
+}
+
+function renderOptions(id,data,selected,callback){
+$(id).innerHTML=data.map(item=>`
+<button class="option ${selected(item)?'active':''}" onclick="${callback}('${item.id}')">
+${item.emoji?`<span class="sample">${item.emoji}</span>`:''}
+${item.name}
+</button>`).join('');
+}
+
+function render(){
+renderFlowerOptions();
+
+$('wrappings').innerHTML=wrappingData.map(x=>`
+<button class="option ${state.wrapping===x.id?'active':''}" onclick="chooseWrapping('${x.id}')">
+<span class="sample" style="width:25px;height:25px;border-radius:50%;background:${x.color};display:block;margin:0 auto 7px;border:1px solid #ddd"></span>
+${x.name}
+</button>`).join('');
+
+renderOptions('ribbons',ribbonData,x=>state.ribbon===x.id,'chooseRibbon');
+renderOptions('decorations',decorationData,x=>state.decorations.includes(x.id),'toggleDecoration');
+
+drawPreview();
+drawSummary();
+save();
+}
+
+function changeFlower(id,amount){
+let current=state.flowers[id]||0;
+state.flowers[id]=Math.max(0,Math.min(30,current+amount));
+render();
+}
+
+function chooseWrapping(id){
+state.wrapping=id;
+render();
+}
+
+function chooseRibbon(id){
+state.ribbon=id;
+render();
+}
+
+function toggleDecoration(id){
+if(state.decorations.includes(id)){
+state.decorations=state.decorations.filter(x=>x!==id);
+}else{
+state.decorations.push(id);
+}
+render();
+}
+
+function drawPreview(){
+let selected=[];
+flowerData.forEach(f=>{
+for(let i=0;i<(state.flowers[f.id]||0);i++)selected.push(f);
+});
+
+const positions=[
+[50,16],[30,25],[70,25],[18,45],[82,45],
+[39,47],[61,47],[50,65],[27,65],[73,65],
+[10,30],[90,30],[35,10],[65,10],[50,40]
+];
+
+$('flowerHeads').innerHTML=selected.slice(0,30).map((f,i)=>{
+let pos=positions[i%positions.length];
+let extra=i>=positions.length?Math.floor(i/positions.length)*3:0;
+return `<span class="head" style="left:${pos[0]}%;top:${Math.min(85,pos[1]+extra)}%;font-size:${i%3===0?43:36}px">${f.emoji}</span>`;
+}).join('');
+
+let w=wrappingData.find(x=>x.id===state.wrapping);
+$('wrapShape').style.background=w.color;
+$('wrapInner').style.background=w.inner;
+$('wrapName').textContent=w.name.toUpperCase()+' · ATELIER FLEUR';
+
+let r=ribbonData.find(x=>x.id===state.ribbon);
+$('ribbonView').textContent=r.emoji;
+$('ribbonView').style.filter=`drop-shadow(0 2px 2px #0003)`;
+$('ribbonView').style.color=r.color;
+
+$('decorationView').innerHTML=state.decorations.map((id,i)=>{
+let d=decorationData.find(x=>x.id===id);
+let spots=[[15,22],[80,18],[13,58],[85,60],[50,5],[50,76]];
+let p=spots[i%spots.length];
+return `<span style="left:${p[0]}%;top:${p[1]}%">${d.emoji}</span>`;
+}).join('');
+}
+
+function drawSummary(){
+let total=0;
+let count=0;
+let rows=[];
+
+flowerData.forEach(f=>{
+let n=state.flowers[f.id]||0;
+if(n){
+count+=n;
+total+=n*f.price;
+rows.push([f.name+' × '+n,n*f.price]);
+}
+});
+
+let w=wrappingData.find(x=>x.id===state.wrapping);
+let r=ribbonData.find(x=>x.id===state.ribbon);
+total+=w.price+r.price;
+rows.push(['Пакування: '+w.name,w.price]);
+rows.push(['Стрічка: '+r.name,r.price]);
+
+state.decorations.forEach(id=>{
+let d=decorationData.find(x=>x.id===id);
+total+=d.price;
+rows.push([d.name,d.price]);
+});
+
+$('summary').innerHTML=rows.map(x=>`
+<div class="summary-line"><span>${x[0]}</span><b>${x[1]} грн</b></div>`).join('');
+
+$('totalFlowers').textContent=count;
+$('summary').innerHTML+=`<div class="summary-line"><span>Додаткові деталі</span><b>${state.decorations.length}</b></div>`;
+$('summary').innerHTML+=`<div class="summary-line"><span>Побажання</span><b>${state.message.trim()?'Є':'—'}</b></div>`;
+$('summary').innerHTML+=`<div class="total"><span>Орієнтовна вартість</span><span>${total} грн</span></div>`;
+}
+
+function save(){
+try{localStorage.setItem('atelier_fleur',JSON.stringify(state));}catch(e){}
+}
+
+function load(){
+try{
+let old=JSON.parse(localStorage.getItem('atelier_fleur'));
+if(old)Object.assign(state,old);
+}catch(e){}
+}
+
+$('message').addEventListener('input',e=>{
+state.message=e.target.value;
+save();
+drawSummary();
+});
+
+function sendBouquet(){
+let count=Object.values(state.flowers).reduce((a,b)=>a+b,0);
+if(!count){
+alert('Спочатку обери хоча б одну квітку 🌸');
+return;
+}
+
+let list=flowerData.filter(f=>state.flowers[f.id]).map(f=>
+f.name+': '+state.flowers[f.id]+' шт.'
+).join('\n');
+
+let w=wrappingData.find(x=>x.id===state.wrapping);
+let r=ribbonData.find(x=>x.id===state.ribbon);
+let dec=state.decorations.map(id=>decorationData.find(x=>x.id===id).name).join(', ')||'Без прикрас';
+
+let total=flowerData.reduce((s,f)=>s+(state.flowers[f.id]||0)*f.price,0)+w.price+r.price+
+state.decorations.reduce((s,id)=>s+decorationData.find(x=>x.id===id).price,0);
+
+let message=`🌸 МОЯ КОМПОЗИЦІЯ — ATELIER FLEUR
+
+Квіти:
+${list}
+
+Пакування: ${w.name}
+Стрічка: ${r.name}
+Прикраси: ${dec}
+
+Кількість квітів: ${count}
+Орієнтовна вартість: ${total} грн
+
+Побажання:
+${state.message||'Немає'}
+
+Я створила цей букет сама 💗`;
+
+let blob=new Blob([message],{type:'text/plain;charset=utf-8'});
+let a=document.createElement('a');
+a.href=URL.createObjectURL(blob);
+a.download='my-bouquet.txt';
+a.click();
+URL.revokeObjectURL(a.href);
+
+if(navigator.share){
+navigator.share({title:'Мій букет — ATELIER FLEUR',text:message}).catch(()=>{});
+}else{
+if(navigator.clipboard){
+navigator.clipboard.writeText(message).then(()=>alert('Опис букета скопійовано! Також завантажено файл із композицією.'));
+}else{
+alert('Опис букета завантажено у файл.');
+}
+}
+}
+
+function resetAll(){
+if(!confirm('Очистити композицію та почати спочатку?'))return;
+state.flowers={};
+state.wrapping='cream';
+state.ribbon='black';
+state.decorations=[];
+state.message='';
+$('message').value='';
+render();
+}
+
+load();
+$('message').value=state.message||'';
+render();
+</script>
+</body>
+</html>
